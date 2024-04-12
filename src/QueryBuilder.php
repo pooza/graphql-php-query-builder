@@ -11,14 +11,19 @@ class QueryBuilder {
   const TYPE_QUERY = 'query';
   const TYPE_MUTATION = 'mutation';
 
-  public function __construct($objectField = '', $arguments = [], $query = [], $queryType = self::TYPE_QUERY) {
+  public function __construct (
+    $objectField = '',
+    $arguments = [],
+    $query = [],
+    $queryType = self::TYPE_QUERY
+  ) {
     $this->setObjectField($objectField);
     $this->setArguments($arguments);
     $this->setQueryObject($query);
     $this->setQueryType($queryType);
   }
 
-  public function buildQuery($prettify = false, $operationName = '') {
+  public function buildQuery ($prettify = false, $operationName = '') {
     if (empty($this->queryObject)) {
       return '';
     }
@@ -36,7 +41,7 @@ class QueryBuilder {
     return $graphQLQuery;
   }
 
-  protected function renderQueryObject($query = []) {
+  protected function renderQueryObject ($query = []) {
     $queryString = '';
 
     foreach ($query as $queryField => $queryFieldValue) {
@@ -58,7 +63,7 @@ class QueryBuilder {
     return $queryString;
   }
 
-  protected function renderQueryObjectPrettify($query = [], $tabCount = 0) {
+  protected function renderQueryObjectPrettify ($query = [], $tabCount = 0) {
     $queryString = '';
 
     foreach ($query as $queryField => $queryFieldValue) {
@@ -82,7 +87,7 @@ class QueryBuilder {
     return $queryString;
   }
 
-  protected function formatArguments($arguments) {
+  protected function formatArguments ($arguments) {
     if ($arguments) {
       $formattedArgument = [];
       foreach ($arguments as $name => $type) {
@@ -102,22 +107,22 @@ class QueryBuilder {
     return '';
   }
 
-  public function setQueryObject($queryObject) {
+  public function setQueryObject ($queryObject) {
     $this->queryObject = $queryObject ?? [];
     return $this;
   }
 
-  public function setObjectField($objectField) {
+  public function setObjectField ($objectField) {
     $this->objectField = $objectField ?? '';
     return $this;
   }
 
-  public function setArguments($arguments) {
+  public function setArguments ($arguments) {
     $this->arguments = $arguments ?? [];
     return $this;
   }
 
-  public function setQueryType($queryType) {
+  public function setQueryType ($queryType) {
     $this->queryType = $queryType ?? '';
     return $this;
   }
