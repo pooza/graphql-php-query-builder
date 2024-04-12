@@ -10,39 +10,36 @@ namespace GraphQLQueryBuilder;
  */
 class Fragment extends QueryBuilder
 {
-    /**
-     * String of type that need to be converted and built as graphQL server supported query
-     * @var string
-     */
-    protected $type;
+  /**
+   * String of type that need to be converted and built as graphQL server supported query
+   * @var string
+   */
+  protected $type;
 
-    /**
-     * Fragment constructor
-     *
-     * @param string $type
-     */
-    public function __construct($type = '')
-    {
-        $this->setFragmentType($type);
-    }
+  /**
+   * Fragment constructor
+   *
+   * @param string $type
+   */
+  public function __construct($type = '') {
+    $this->setFragmentType($type);
+  }
 
-    /**
-     * formatInlineFragment is to format inline fragment
-     * and return the string that can be formatted along with query
-     * @return string fragment string
-     */
-    public function formatInlineFragment()
-    {
-        return '... on ' . $this->type;
-    }
+  /**
+   * formatInlineFragment is to format inline fragment
+   * and return the string that can be formatted along with query
+   * @return string fragment string
+   */
+  public function formatInlineFragment() {
+    return '... on ' . $this->type;
+  }
 
-    /**
-     * @param string $type
-     * @return Fragment
-     */
-    public function setFragmentType($type)
-    {
-        $this->type = $type ?? '';
-        return $this;
-    }
+  /**
+   * @param string $type
+   * @return Fragment
+   */
+  public function setFragmentType($type) {
+    $this->type = $type ?? '';
+    return $this;
+  }
 }
