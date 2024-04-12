@@ -3,3 +3,11 @@ composer.phar
 .phpintel
 .php_cs
 .php_cs.cache
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
+*.log
+*.bak
+dist
+.vscode
