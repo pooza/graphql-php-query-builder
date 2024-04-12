@@ -16,9 +16,10 @@ class Field extends QueryBuilder {
   }
 
   public function formatFieldsHeading() {
-    $fieldsHeading = $this->alias ? $this->alias . ':' : '';
-    $fieldsHeading .= $this->objectField;
-    $fieldsHeading .= $this->arguments ? ' ' . $this->formatArguments($this->arguments): '';
-    return $fieldsHeading;
+    $heading = [];
+    $heading[] = $this->alias ? $this->alias . ':' : '';
+    $heading[] = $this->objectField;
+    $heading[] = $this->arguments ? ' ' . $this->formatArguments($this->arguments): '';
+    return implode($heading);
   }
 }
