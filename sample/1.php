@@ -11,23 +11,35 @@ $builder = new QueryBuilder;
 $builder->setObjectField('oysterApplicantPersonalInformationCollection');
 $builder->setArguments(['userIdNo' => $user_id]);
 $builder->addQueryObject([
-  'items' => [
-    'firstName', 'lastName',
-    'firstNameKana', 'lastNameKana',
-    'birthDate',
-    'gender',
-    'mobileNumber',
-    'postalCode', 'addressJapanese',
-	],
+  'name' => 'oysterApplicantPersonalInformationCollection',
+  'data' => [
+    'items' => [
+      'firstName', 'lastName',
+      'firstNameKana', 'lastNameKana',
+      'birthDate',
+      'gender',
+      'mobileNumber',
+      'postalCode', 'addressJapanese',
+    ],
+  ],
 ]);
 $builder->addQueryObject([
-  'items' => [
-    'firstName', 'lastName',
-    'firstNameKana', 'lastNameKana',
-    'birthDate',
-    'gender',
-    'mobileNumber',
-    'postalCode', 'addressJapanese',
-	],
+  'name' => 'oysterApplicantEducationCollection',
+  'data' => [
+    'items' => [
+      'year1Start',
+      'month1Start',
+      'schoolorcompanyInformation1Start',
+      'year1End',
+      'month1End',
+      'schoolorcompanyInformation1End',
+      'year2Start',
+      'month2Start',
+      'schoolorcompanyInformation2Start',
+      'year2End',
+      'month2End',
+      'schoolorcompanyInformation2End',
+    ],
+  ],
 ]);
-echo $builder->build(true);
+echo $builder->build();

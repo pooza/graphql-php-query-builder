@@ -5,14 +5,12 @@ class QueryBuilder {
   const TYPE_QUERY = 'query';
   const TYPE_MUTATION = 'mutation';
 
-  protected $objectField;
   protected $arguments;
   protected $queryType;
   protected $objects = [];
   protected $tab = '  ';
 
-  public function __construct ($field = '', $args = [], $type = self::TYPE_QUERY) {
-    $this->setObjectField($field);
+  public function __construct ($args = [], $type = self::TYPE_QUERY) {
     $this->setArguments($args);
     $this->setQueryType($type);
   }
@@ -22,19 +20,20 @@ class QueryBuilder {
   }
 
   public function build () {
-    $query = [];
-    $query[] = $this->queryType ? $this->queryType . ' ' : 'query ';
-    $query[] = "{\n" . $this->tab . $this->objectField;
-    if ($this->arguments) {
-      $query[] = ' ' . json_encode($this->arguments) . "{\n";
-    } else {
-      $query[] = "{\n";
-    }
     $obj = null;
+    $query = [$this->queryType . " {\n"];
     foreach ($this->objects as $obj) {
-      $query[] = $this->renderQueryObjectPrettify($obj, 2);
+      $line = $this->tab .  $obj['name'];
+      if ($this->arguments) {
+        $line .=  ' ' . json_encode($this->arguments) . " {\n";
+      } else {
+        $line .= " {\n";
+      }
+      $query[] = $line;
+      $query[] = $this->renderQueryObjectPrettify($obj['data'], 2);
+      $query[] = $this->tab . "}\n";
     }
-    $query[] = $this->tab . "}\n}";
+    $query[] = "}";
     return implode($query);
   }
 
