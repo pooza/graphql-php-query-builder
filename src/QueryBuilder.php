@@ -2,128 +2,74 @@
 namespace GraphQLQueryBuilder;
 
 class QueryBuilder {
-  protected $queryObject;
-  protected $objectField;
-  protected $arguments;
-  protected $queryType;
-  protected $tab = '  ';
-
   const TYPE_QUERY = 'query';
   const TYPE_MUTATION = 'mutation';
 
-  public function __construct (
-    $objectField = '',
-    $arguments = [],
-    $query = [],
-    $queryType = self::TYPE_QUERY
-  ) {
-    $this->setObjectField($objectField);
-    $this->setArguments($arguments);
-    $this->setQueryObject($query);
-    $this->setQueryType($queryType);
+  protected $objectField;
+  protected $arguments;
+  protected $queryType;
+  protected $objects = [];
+  protected $tab = '  ';
+
+  public function __construct ($field = '', $args = [], $type = self::TYPE_QUERY) {
+    $this->setObjectField($field);
+    $this->setArguments($args);
+    $this->setQueryType($type);
   }
 
-  public function buildQuery ($prettify = false, $operationName = '') {
-    if (empty($this->queryObject)) {
-      return '';
+  public function addQueryObject($obj) {
+    $this->objects[] = $obj;
+  }
+
+  public function build () {
+    $query = [];
+    $query[] = $this->queryType ? $this->queryType . ' ' : 'query ';
+    $query[] = "{\n" . $this->tab . $this->objectField;
+    if ($this->arguments) {
+      $query[] = ' ' . json_encode($this->arguments) . "{\n";
+    } else {
+      $query[] = "{\n";
     }
-
-    $tab = $prettify ? $this->tab : '';
-
-    $graphQLQuery = $this->queryType ? $this->queryType . ' ' : 'query ';
-    $graphQLQuery .= $operationName ? $operationName : '';
-
-    $graphQLQuery .= "{\n" . $tab . $this->objectField;
-    $graphQLQuery .= $this->arguments ? ' ' . $this->formatArguments($this->arguments) . "{\n" : "{\n";
-    $graphQLQuery .= $prettify === true ? $this->renderQueryObjectPrettify($this->queryObject, 2) : $this->renderQueryObject($this->queryObject);
-    $graphQLQuery .= $tab . "}\n}";
-
-    return $graphQLQuery;
+    $obj = null;
+    foreach ($this->objects as $obj) {
+      $query[] = $this->renderQueryObjectPrettify($obj, 2);
+    }
+    $query[] = $this->tab . "}\n}";
+    return implode($query);
   }
 
-  protected function renderQueryObject ($query = []) {
-    $queryString = '';
-
-    foreach ($query as $queryField => $queryFieldValue) {
-      // recursive loop through every node
-      if (!is_numeric($queryField)) {
-        $queryString .= $queryField . "{\n";
-
-        if (is_array($queryFieldValue)) {
-          $queryString .= $this->renderQueryObject($queryFieldValue);
+  protected function renderQueryObjectPrettify ($query = [], $depth = 0) {
+    $dest = [];
+    foreach ($query as $k => $v) {
+      if (is_numeric($k)) {
+        $dest[] = str_repeat($this->tab, $depth) . $v;
+      } else  {
+        $dest[] = str_repeat($this->tab, $depth) . $k . '{';
+        $depth ++;
+        if (is_array($v)) {
+          $dest[] = $this->renderQueryObjectPrettify($v, $depth);
         } else {
-          $queryString .= $queryFieldValue . "\n";
+          $dest[] = str_repeat($this->tab, $depth) . $v;
         }
-        $queryString .= "}\n" ;
-      } else {
-        $queryString .= $queryFieldValue . "\n";
+        $depth --;
+        $dest[] = str_repeat($this->tab, $depth) . "}\n";
       }
     }
-
-    return $queryString;
+    return implode("\n", $dest);
   }
 
-  protected function renderQueryObjectPrettify ($query = [], $tabCount = 0) {
-    $queryString = '';
-
-    foreach ($query as $queryField => $queryFieldValue) {
-      // recursive loop through every node
-      if (!is_numeric($queryField)) {
-        $queryString .= str_repeat($this->tab, $tabCount) . $queryField . "{\n";
-        $tabCount++;
-
-        if (is_array($queryFieldValue)) {
-          $queryString .= $this->renderQueryObjectPrettify($queryFieldValue, $tabCount);
-        } else {
-          $queryString .= str_repeat($this->tab, $tabCount) . $queryFieldValue . "\n";
-        }
-        $tabCount--;
-        $queryString .= str_repeat($this->tab, $tabCount) . "}\n" ;
-      } else {
-        $queryString .= str_repeat($this->tab, $tabCount) . $queryFieldValue . "\n";
-      }
-    }
-
-    return $queryString;
-  }
-
-  protected function formatArguments ($arguments) {
-    if ($arguments) {
-      $formattedArgument = [];
-      foreach ($arguments as $name => $type) {
-        if (is_array($type)) {
-          if (count($type) > 0 && is_string($type[0])) {
-            $type = '["' . implode('","', $type) . '"]';
-          } else {
-            $type = '[' . implode(',', $type) . ']' ;
-          }
-        } else {
-          $type = gettype($type) === 'string' ? '"' . $type . '"' : $type ;
-        }
-        $formattedArgument[] = $name . ': ' . $type;
-      }
-      return '(' . implode(', ', $formattedArgument) . ') ';
-    }
-    return '';
-  }
-
-  public function setQueryObject ($queryObject) {
-    $this->queryObject = $queryObject ?? [];
+  public function setObjectField ($field) {
+    $this->objectField = $field ?? '';
     return $this;
   }
 
-  public function setObjectField ($objectField) {
-    $this->objectField = $objectField ?? '';
+  public function setArguments ($args) {
+    $this->arguments = $args ?? [];
     return $this;
   }
 
-  public function setArguments ($arguments) {
-    $this->arguments = $arguments ?? [];
-    return $this;
-  }
-
-  public function setQueryType ($queryType) {
-    $this->queryType = $queryType ?? '';
+  public function setQueryType ($type) {
+    $this->queryType = $type ?? '';
     return $this;
   }
 }
