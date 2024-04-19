@@ -33,7 +33,7 @@ class QueryBuilder {
     $obj = null;
     $query = [$this->queryType . " {\n"];
     foreach ($this->objects as $obj) {
-      $line = $this->tab .  $obj['name'];
+      $line = $this->tab . $obj['name'];
       if ($this->arguments) {
         $line .=  ' ' . $this->renderArguments($this->arguments) . " {\n";
       } else {
@@ -63,21 +63,21 @@ class QueryBuilder {
     }
   }
 
-  protected function renderQueryObject ($query = [], $depth = 0) {
+  protected function renderQueryObject ($query = [], $level = 0) {
     $dest = [];
     foreach ($query as $k => $v) {
       if (is_numeric($k)) {
-        $dest[] = str_repeat($this->tab, $depth) . $v;
+        $dest[] = str_repeat($this->tab, $level) . $v;
       } else  {
-        $dest[] = str_repeat($this->tab, $depth) . $k . '{';
-        $depth ++;
+        $dest[] = str_repeat($this->tab, $level) . $k . '{';
+        $level ++;
         if (is_array($v)) {
-          $dest[] = $this->renderQueryObject($v, $depth);
+          $dest[] = $this->renderQueryObject($v, $level);
         } else {
-          $dest[] = str_repeat($this->tab, $depth) . $v;
+          $dest[] = str_repeat($this->tab, $level) . $v;
         }
-        $depth --;
-        $dest[] = str_repeat($this->tab, $depth) . "}\n";
+        $level --;
+        $dest[] = str_repeat($this->tab, $level) . "}\n";
       }
     }
     return implode("\n", $dest);
