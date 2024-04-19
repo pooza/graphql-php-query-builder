@@ -25,7 +25,7 @@ class QueryBuilder {
     foreach ($this->objects as $obj) {
       $line = $this->tab .  $obj['name'];
       if ($this->arguments) {
-        $line .=  ' ' . $this->renderArguments() . " {\n";
+        $line .=  ' (' . $this->renderArguments($this->arguments) . ") {\n";
       } else {
         $line .= " {\n";
       }
@@ -37,18 +37,16 @@ class QueryBuilder {
     return implode($query);
   }
 
-  protected function renderArguments () {
-    $dest = json_encode($this->arguments);
-    $dest = mb_ereg_replace('^{', '(', $dest);
-    $dest = mb_ereg_replace('}$', ')', $dest);
-    return $dest;
-    $args = ['('];
-    foreach ($this->arguments as $k => $v) {
-        $args[] = $k . ':';
-        $args[] = json_encode($v);
+  protected function renderArguments ($value) {
+    if (is_array($value)) {
+      $dest = ['{'];
+      foreach ($value as $k => $v) {
+        $dest[] = $this->renderArguments($value);
+      }
+      $dest[] = ']';
+      return implode(',', $dest);
     }
-    $args[] = ')';
-    return implode('', $args);
+    return $k . ': ' . json_encode($value);
   }
 
   protected function renderQueryObject ($query = [], $depth = 0) {
