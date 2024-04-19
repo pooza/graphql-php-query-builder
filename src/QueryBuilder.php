@@ -51,7 +51,9 @@ class QueryBuilder {
     if (is_array($value)) {
       $dest = [];
       foreach ($value as $k => $v) {
-        $dest[] = $k . ': ' . $this->renderArguments($v, $level + 1);
+        if (!empty($k) && !empty($v)) {
+          $dest[] = $k . ': ' . $this->renderArguments($v, $level + 1);
+        }
       }
       if (0 < $level) {
         return '{' . implode(', ', $dest) . '}';
