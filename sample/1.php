@@ -1,15 +1,13 @@
 <?php
-namespace GraphQLQueryBuilder;
+require_once 'src/QueryBuilder.php';
 
-define('ROOT_DIR', dirname(dirname(__FILE__)));
-require_once ROOT_DIR . '/src/QueryBuilder.php';
-require_once ROOT_DIR . '/src/Utils.php';
+$builder = new GraphQLQueryBuilder\QueryBuilder;
 
-$user_id = 1;
+$builder->setArguments([
+  'preview' => true,
+  'where' => ['userIdNo' => 2],
+]);
 
-$builder = new QueryBuilder;
-$builder->setObjectField('oysterApplicantPersonalInformationCollection');
-$builder->setArguments(['userIdNo' => $user_id]);
 $builder->addQueryObject([
   'name' => 'oysterApplicantPersonalInformationCollection',
   'data' => [
@@ -27,19 +25,39 @@ $builder->addQueryObject([
   'name' => 'oysterApplicantEducationCollection',
   'data' => [
     'items' => [
-      'year1Start',
-      'month1Start',
-      'schoolorcompanyInformation1Start',
-      'year1End',
-      'month1End',
-      'schoolorcompanyInformation1End',
-      'year2Start',
-      'month2Start',
-      'schoolorcompanyInformation2Start',
-      'year2End',
-      'month2End',
-      'schoolorcompanyInformation2End',
+      'year1Start', 'month1Start',
+      'schoolorcompanyInformation1Start', 'year1End',
+      'month1End', 'schoolorcompanyInformation1End',
+      'year2Start', 'month2Start',
+      'schoolorcompanyInformation2Start', 'year2End',
+      'month2End', 'schoolorcompanyInformation2End',
     ],
   ],
 ]);
-echo $builder->build();
+$builder->addQueryObject([
+  'name' => 'oysterApplicantSelfIntroductionCollection',
+  'data' => [
+    'items' => [
+      'selfIntroJapanese',
+    ],
+  ],
+]);
+$builder->addQueryObject([
+  'name' => 'oysterApplicantSkillsAndCertificationsCollection',
+  'data' => [
+    'items' => [
+      'skills',
+      'certifications',
+    ],
+  ],
+]);
+$builder->addQueryObject([
+  'name' => 'oysterApplicantPreferencesCollection',
+  'data' => [
+    'items' => [
+      'desiredConditions',
+    ],
+  ],
+]);
+
+print $builder->build();

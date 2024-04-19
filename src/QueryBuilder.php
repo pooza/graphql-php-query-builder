@@ -15,6 +15,16 @@ class QueryBuilder {
     $this->setQueryType($type);
   }
 
+  public function setArguments ($args) {
+    $this->arguments = $args ?? [];
+    return $this;
+  }
+
+  public function setQueryType ($type) {
+    $this->queryType = $type ?? '';
+    return $this;
+  }
+
   public function addQueryObject($obj) {
     $this->objects[] = $obj;
   }
@@ -25,19 +35,35 @@ class QueryBuilder {
     foreach ($this->objects as $obj) {
       $line = $this->tab .  $obj['name'];
       if ($this->arguments) {
-        $line .=  ' ' . json_encode($this->arguments) . " {\n";
+        $line .=  ' ' . $this->renderArguments($this->arguments) . " {\n";
       } else {
         $line .= " {\n";
       }
       $query[] = $line;
-      $query[] = $this->renderQueryObjectPrettify($obj['data'], 2);
+      $query[] = $this->renderQueryObject($obj['data'], 2);
       $query[] = $this->tab . "}\n";
     }
-    $query[] = "}";
+    $query[] = "}\n";
     return implode($query);
   }
 
-  protected function renderQueryObjectPrettify ($query = [], $depth = 0) {
+  private function renderArguments ($value, $level = 0) {
+    if (is_array($value)) {
+      $dest = [];
+      foreach ($value as $k => $v) {
+        $dest[] = $k . ': ' . $this->renderArguments($v, $level + 1);
+      }
+      if (0 < $level) {
+        return '{' . implode(', ', $dest) . '}';
+      } else {
+        return '(' . implode(', ', $dest) . ')';
+      }
+    } else if (!empty($value)){
+      return json_encode($value);
+    }
+  }
+
+  protected function renderQueryObject ($query = [], $depth = 0) {
     $dest = [];
     foreach ($query as $k => $v) {
       if (is_numeric($k)) {
@@ -46,7 +72,7 @@ class QueryBuilder {
         $dest[] = str_repeat($this->tab, $depth) . $k . '{';
         $depth ++;
         if (is_array($v)) {
-          $dest[] = $this->renderQueryObjectPrettify($v, $depth);
+          $dest[] = $this->renderQueryObject($v, $depth);
         } else {
           $dest[] = str_repeat($this->tab, $depth) . $v;
         }
@@ -55,20 +81,5 @@ class QueryBuilder {
       }
     }
     return implode("\n", $dest);
-  }
-
-  public function setObjectField ($field) {
-    $this->objectField = $field ?? '';
-    return $this;
-  }
-
-  public function setArguments ($args) {
-    $this->arguments = $args ?? [];
-    return $this;
-  }
-
-  public function setQueryType ($type) {
-    $this->queryType = $type ?? '';
-    return $this;
   }
 }
