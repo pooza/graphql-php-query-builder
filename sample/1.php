@@ -8,7 +8,7 @@ $builder->setArguments([
   'where' => ['userIdNo' => 2],
 ]);
 
-$builder->addQueryObject([
+$builder->addObject([
   'name' => 'oysterApplicantPersonalInformationCollection',
   'data' => [
     'items' => [
@@ -21,7 +21,7 @@ $builder->addQueryObject([
     ],
   ],
 ]);
-$builder->addQueryObject([
+$builder->addObject([
   'name' => 'oysterApplicantEducationCollection',
   'data' => [
     'items' => [
@@ -34,7 +34,7 @@ $builder->addQueryObject([
     ],
   ],
 ]);
-$builder->addQueryObject([
+$builder->addObject([
   'name' => 'oysterApplicantSelfIntroductionCollection',
   'data' => [
     'items' => [
@@ -42,7 +42,7 @@ $builder->addQueryObject([
     ],
   ],
 ]);
-$builder->addQueryObject([
+$builder->addObject([
   'name' => 'oysterApplicantSkillsAndCertificationsCollection',
   'data' => [
     'items' => [
@@ -51,7 +51,7 @@ $builder->addQueryObject([
     ],
   ],
 ]);
-$builder->addQueryObject([
+$builder->addObject([
   'name' => 'oysterApplicantPreferencesCollection',
   'data' => [
     'items' => [
