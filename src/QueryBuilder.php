@@ -15,6 +15,16 @@ class QueryBuilder {
     $this->setQueryType($type);
   }
 
+  public function setArguments ($args) {
+    $this->arguments = $args ?? [];
+    return $this;
+  }
+
+  public function setQueryType ($type) {
+    $this->queryType = $type ?? '';
+    return $this;
+  }
+
   public function addQueryObject($obj) {
     $this->objects[] = $obj;
   }
@@ -25,7 +35,7 @@ class QueryBuilder {
     foreach ($this->objects as $obj) {
       $line = $this->tab .  $obj['name'];
       if ($this->arguments) {
-        $line .=  ' (' . $this->renderArguments($this->arguments) . ") {\n";
+        $line .=  ' ' . $this->renderArguments($this->arguments) . " {\n";
       } else {
         $line .= " {\n";
       }
@@ -33,20 +43,24 @@ class QueryBuilder {
       $query[] = $this->renderQueryObject($obj['data'], 2);
       $query[] = $this->tab . "}\n";
     }
-    $query[] = "}";
+    $query[] = "}\n";
     return implode($query);
   }
 
-  protected function renderArguments ($value) {
+  private function renderArguments ($value, $level = 0) {
     if (is_array($value)) {
-      $dest = ['{'];
+      $dest = [];
       foreach ($value as $k => $v) {
-        $dest[] = $this->renderArguments($value);
+        $dest[] = $k . ': ' . $this->renderArguments($v, $level + 1);
       }
-      $dest[] = ']';
-      return implode(',', $dest);
+      if (0 < $level) {
+        return '{' . implode(', ', $dest) . '}';
+      } else {
+        return '(' . implode(', ', $dest) . ')';
+      }
+    } else if (!empty($value)){
+      return json_encode($value);
     }
-    return $k . ': ' . json_encode($value);
   }
 
   protected function renderQueryObject ($query = [], $depth = 0) {
@@ -67,20 +81,5 @@ class QueryBuilder {
       }
     }
     return implode("\n", $dest);
-  }
-
-  public function setObjectField ($field) {
-    $this->objectField = $field ?? '';
-    return $this;
-  }
-
-  public function setArguments ($args) {
-    $this->arguments = $args ?? [];
-    return $this;
-  }
-
-  public function setQueryType ($type) {
-    $this->queryType = $type ?? '';
-    return $this;
   }
 }
