@@ -1,7 +1,7 @@
 <?php
 namespace GraphQLQueryBuilder;
 
-require_once 'Util.class.php';
+require_once 'Utils.class.php';
 
 class QueryBuilder {
   const TYPE_QUERY = 'query';
@@ -32,27 +32,20 @@ class QueryBuilder {
   }
 
   public function build () {
-    $obj = null;
-    $query = [$this->queryType . " {\n"];
+    $query = [$this->queryType . ' {'];
     foreach ($this->objects as $obj) {
-      $line = $this->tab . $obj['name'];
-      if ($this->arguments) {
-        $line .=  ' ' . $this->renderArguments($this->arguments) . " {\n";
-      } else {
-        $line .= " {\n";
-      }
-      $query[] = $line;
+      $query[] = $this->tab . $obj['name'] . ' ' . $this->renderArguments($this->arguments) . ' {';
       $query[] = $this->renderObject($obj['data'], 2);
-      $query[] = $this->tab . "}\n";
+      $query[] = $this->tab . '}';
     }
-    $query[] = "}\n";
-    return implode($query);
+    $query[] = '}';
+    return implode("\n", $query);
   }
 
   protected function renderArguments ($value, $level = 0) {
     if (is_array($value)) {
       $dest = [];
-      if (Util::isHashMap($value)) {
+      if (Utils::isHashMap($value)) {
         foreach ($value as $k => $v) {
           if (!empty($k) && !empty($v)) {
             $dest[] = $k . ': ' . $this->renderArguments($v, $level + 1);
