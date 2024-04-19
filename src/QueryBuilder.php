@@ -47,22 +47,36 @@ class QueryBuilder {
     return implode($query);
   }
 
-  private function renderArguments ($value, $level = 0) {
+  protected function renderArguments ($value, $level = 0) {
     if (is_array($value)) {
       $dest = [];
-      foreach ($value as $k => $v) {
-        if (!empty($k) && !empty($v)) {
-          $dest[] = $k . ': ' . $this->renderArguments($v, $level + 1);
+      if ($this->isHashMap($value)) {
+        foreach ($value as $k => $v) {
+          if (!empty($k) && !empty($v)) {
+            $dest[] = $k . ': ' . $this->renderArguments($v, $level + 1);
+          }
         }
-      }
-      if (0 < $level) {
-        return '{' . implode(', ', $dest) . '}';
+        if (0 < $level) {
+          return '{' . implode(', ', $dest) . '}';
+        } else {
+          return '(' . implode(', ', $dest) . ')';
+        }
       } else {
-        return '(' . implode(', ', $dest) . ')';
+        foreach ($value as $k => $v) {
+          if (!empty($v)) {
+            $dest[] = $this->renderArguments($v, $level + 1);
+          }
+        }
+        return '[' . implode(', ', $dest) . ']';
       }
     } else if (!empty($value)){
       return json_encode($value);
     }
+  }
+
+  private function isHashMap ($array) {
+    $keys = array_keys($array);
+    return (array_keys($keys) !== $keys);
   }
 
   protected function renderQueryObject ($query = [], $level = 0) {
